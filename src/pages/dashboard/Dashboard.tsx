@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Brain, Calendar } from "lucide-react";
+import { Brain, Calendar, Map } from "lucide-react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
 const Dashboard = () => {
@@ -28,6 +28,11 @@ const Dashboard = () => {
       title: "Clubs & Events",
       path: "/dashboard/events",
       icon: Calendar,
+    },
+    {
+      title: "Campus Navigate",
+      path: "/dashboard/navigate",
+      icon: Map,
     },
   ];
 

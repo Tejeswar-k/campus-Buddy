@@ -10,6 +10,7 @@ import SignUp from "./pages/auth/SignUp";
 import Dashboard from "./pages/dashboard/Dashboard";
 import StudyAssistant from "./pages/dashboard/StudyAssistant";
 import ClubEvents from "./pages/dashboard/ClubEvents";
+import CampusNavigate from "./pages/dashboard/CampusNavigate";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />}>
             <Route path="study" element={<StudyAssistant />} />
             <Route path="events" element={<ClubEvents />} />
+            <Route path="navigate" element={<CampusNavigate />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
