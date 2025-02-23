@@ -1,10 +1,10 @@
 
-import { useLoadScript, GoogleMap, MarkerF } from '@react-google-maps/api';
-import { useState, useEffect } from 'react';
+import { useLoadScript, GoogleMap, MarkerF, DirectionsRenderer } from '@react-google-maps/api';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from 'lucide-react';
+import { Search, Navigation } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 
 // SRM University Kattankulathur campus coordinates
@@ -23,6 +23,8 @@ const CampusNavigate = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLocation, setSelectedLocation] = useState<typeof locations[0] | null>(null);
+  const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+  const [userLocation, setUserLocation] = useState<google.maps.LatLngLiteral | null>(null);
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
@@ -39,12 +41,68 @@ const CampusNavigate = () => {
     }
   }, [loadError, toast]);
 
+  useEffect(() => {
+    // Get user's current location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        () => {
+          toast({
+            title: "Location access denied",
+            description: "Please enable location access to use directions feature",
+            variant: "destructive",
+          });
+        }
+      );
+    }
+  }, [toast]);
+
+  const getDirections = useCallback(async () => {
+    if (!selectedLocation || !userLocation) {
+      toast({
+        title: "Cannot get directions",
+        description: "Please ensure location access is enabled and a destination is selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const directionsService = new google.maps.DirectionsService();
+
+    try {
+      const result = await directionsService.route({
+        origin: userLocation,
+        destination: selectedLocation.position,
+        travelMode: google.maps.TravelMode.WALKING,
+      });
+      setDirections(result);
+    } catch (error) {
+      toast({
+        title: "Error getting directions",
+        description: "Could not calculate route to the selected location",
+        variant: "destructive",
+      });
+    }
+  }, [selectedLocation, userLocation, toast]);
+
   const handleSearch = () => {
     const found = locations.find(loc => 
       loc.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     if (found) {
       setSelectedLocation(found);
+      setDirections(null); // Clear existing directions when new location is selected
+    } else {
+      toast({
+        title: "Location not found",
+        description: "Please try searching for a different location",
+        variant: "destructive",
+      });
     }
   };
 
@@ -102,6 +160,17 @@ const CampusNavigate = () => {
               <Search className="w-4 h-4 mr-2" />
               Search
             </Button>
+            {selectedLocation && (
+              <Button 
+                onClick={getDirections}
+                variant="outline"
+                className="gap-2"
+                disabled={!userLocation}
+              >
+                <Navigation className="w-4 h-4" />
+                Get Directions
+              </Button>
+            )}
           </div>
           <div className="h-[600px] rounded-xl overflow-hidden shadow-inner border border-gray-200">
             <GoogleMap
@@ -122,6 +191,7 @@ const CampusNavigate = () => {
                 ],
               }}
             >
+              {userLocation && <MarkerF position={userLocation} />}
               {locations.map((location) => (
                 <MarkerF
                   key={location.id}
@@ -129,6 +199,7 @@ const CampusNavigate = () => {
                   onClick={() => setSelectedLocation(location)}
                 />
               ))}
+              {directions && <DirectionsRenderer directions={directions} />}
             </GoogleMap>
           </div>
           {selectedLocation && (
