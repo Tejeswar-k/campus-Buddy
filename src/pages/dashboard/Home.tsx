@@ -1,121 +1,88 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { BookOpen, Navigation2, CalendarDays } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
       <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-blue-900">Welcome to SRM Campus Connect</CardTitle>
-          <CardDescription className="text-lg text-blue-700">Your all-in-one campus companion</CardDescription>
+          <CardTitle className="text-3xl font-bold text-blue-900">SRM Institute of Science and Technology</CardTitle>
+          <CardDescription className="text-lg text-blue-700">Kattankulathur, Chennai - 603203</CardDescription>
         </CardHeader>
         <CardContent className="pb-8">
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card className="border border-blue-200 shadow-md hover:shadow-lg transition-shadow overflow-hidden">
-              <div className="h-2 bg-gradient-to-r from-blue-600 to-blue-400"></div>
-              <CardHeader className="pt-6">
-                <BookOpen className="w-8 h-8 text-blue-600" />
-                <CardTitle className="text-xl text-blue-900">Study Assistant</CardTitle>
-                <CardDescription className="text-blue-700">Get AI-powered help with your studies</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link to="/dashboard/study">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">Start Learning</Button>
-                </Link>
-              </CardContent>
-            </Card>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <h3 className="font-semibold text-xl text-blue-900">About SRMIST</h3>
+              <p className="text-blue-800">
+                SRM Institute of Science and Technology (formerly known as SRM University) is one of India's top-ranking universities with over 52,000 full-time students and more than 3,200 faculty across all campuses, offering a wide range of undergraduate, postgraduate and doctoral programs in Engineering, Management, Medicine and Health sciences, and Science and Humanities.
+              </p>
+              <p className="text-blue-800">
+                Founded in 1985 by Dr. T.R. Paarivendhar, SRMIST has emerged as one of the premier institutions in India. The institution's commitment to excellence has earned it numerous accolades, including NAAC accreditation with 'A++' Grade and a place in the QS World Rankings.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <h3 className="font-semibold text-xl text-blue-900">Campus Highlights</h3>
+              <ul className="list-disc list-inside text-blue-800 space-y-2">
+                <li>500+ Acre green campus with modern infrastructure</li>
+                <li>State-of-the-art research facilities</li>
+                <li>World-class sports complex</li>
+                <li>Placement partnerships with over 800+ companies</li>
+                <li>International collaborations with universities worldwide</li>
+                <li>Strong focus on innovation and entrepreneurship</li>
+                <li>Vibrant campus life with 100+ student clubs</li>
+              </ul>
+            </div>
+          </div>
 
-            <Card className="border border-blue-200 shadow-md hover:shadow-lg transition-shadow overflow-hidden">
-              <div className="h-2 bg-gradient-to-r from-amber-400 to-amber-300"></div>
-              <CardHeader className="pt-6">
-                <Navigation2 className="w-8 h-8 text-amber-500" />
-                <CardTitle className="text-xl text-blue-900">Campus Navigation</CardTitle>
-                <CardDescription className="text-blue-700">Find your way around campus</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link to="/dashboard/navigate">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">Start Navigation</Button>
-                </Link>
-              </CardContent>
-            </Card>
+          <div className="mt-8">
+            <h3 className="font-semibold text-xl text-blue-900 mb-4">Academic Excellence</h3>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card className="border border-blue-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg text-blue-900">Engineering</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-blue-800 text-sm">
+                    Offering 24+ undergraduate and 35+ postgraduate programs across various engineering disciplines with state-of-the-art laboratories.
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="border border-blue-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg text-blue-900">Medicine & Health Sciences</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-blue-800 text-sm">
+                    Comprehensive medical education with a 1500-bed multi-specialty hospital providing hands-on clinical experience.
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="border border-blue-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg text-blue-900">Management Studies</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-blue-800 text-sm">
+                    AACSB-accredited programs with focus on experiential learning, industry connects, and global business exposure.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
 
-            <Card className="border border-blue-200 shadow-md hover:shadow-lg transition-shadow overflow-hidden">
-              <div className="h-2 bg-gradient-to-r from-blue-500 to-purple-500"></div>
-              <CardHeader className="pt-6">
-                <CalendarDays className="w-8 h-8 text-blue-600" />
-                <CardTitle className="text-xl text-blue-900">Club Events</CardTitle>
-                <CardDescription className="text-blue-700">Discover campus activities</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link to="/dashboard/events">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">View Events</Button>
-                </Link>
-              </CardContent>
-            </Card>
+          <div className="mt-8">
+            <h3 className="font-semibold text-xl text-blue-900 mb-4">Contact Information</h3>
+            <p className="text-blue-800">
+              <strong>Address:</strong> SRM Nagar, Kattankulathur, Chengalpattu District, Tamil Nadu - 603203<br />
+              <strong>Phone:</strong> +91-44-27417777, +91-44-27417504<br />
+              <strong>Email:</strong> admissions@srmist.edu.in<br />
+              <strong>Website:</strong> www.srmist.edu.in
+            </p>
           </div>
         </CardContent>
       </Card>
-
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card className="border-blue-200 shadow-md overflow-hidden">
-          <div className="h-2 bg-gradient-to-r from-blue-600 to-blue-400"></div>
-          <CardHeader>
-            <CardTitle className="text-xl text-blue-900">About SRM University</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-blue-800 mb-4">
-              SRM Institute of Science and Technology (formerly known as SRM University) is one of the top-ranking universities in India with over 52,000 students and more than 3,200 faculty across all campuses.
-            </p>
-            <div className="rounded-lg overflow-hidden border border-blue-200">
-              <img 
-                src="https://upload.wikimedia.org/wikipedia/en/e/e1/SRM_University_Logo.png" 
-                alt="SRM University" 
-                className="w-full h-48 object-cover"
-                onError={(e) => {
-                  e.currentTarget.src = "https://via.placeholder.com/400x200?text=SRM+University";
-                }}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-blue-200 shadow-md overflow-hidden">
-          <div className="h-2 bg-gradient-to-r from-amber-400 to-amber-300"></div>
-          <CardHeader>
-            <CardTitle className="text-xl text-blue-900">Upcoming Events</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="p-3 border border-blue-100 rounded-lg hover:bg-blue-50 transition">
-                <div className="flex justify-between">
-                  <h3 className="font-medium text-blue-900">Tech Symposium 2023</h3>
-                  <span className="text-amber-600 text-sm">June 15</span>
-                </div>
-                <p className="text-blue-700 text-sm mt-1">Main Auditorium, 9:00 AM</p>
-              </div>
-              
-              <div className="p-3 border border-blue-100 rounded-lg hover:bg-blue-50 transition">
-                <div className="flex justify-between">
-                  <h3 className="font-medium text-blue-900">Cultural Fest</h3>
-                  <span className="text-amber-600 text-sm">June 20</span>
-                </div>
-                <p className="text-blue-700 text-sm mt-1">Open Air Theatre, 5:00 PM</p>
-              </div>
-              
-              <div className="p-3 border border-blue-100 rounded-lg hover:bg-blue-50 transition">
-                <div className="flex justify-between">
-                  <h3 className="font-medium text-blue-900">Placement Drive</h3>
-                  <span className="text-amber-600 text-sm">June 25</span>
-                </div>
-                <p className="text-blue-700 text-sm mt-1">MBA Block, 10:00 AM</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 };
