@@ -32,7 +32,7 @@ const CampusNavigate = () => {
   }, [loadError, toast]);
 
   useEffect(() => {
-    // Get user's current location
+    // Get user's current location or set to SRM default if not available
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -42,13 +42,24 @@ const CampusNavigate = () => {
           });
         },
         () => {
+          // If location access denied, set to a position near SRM
+          setUserLocation({
+            lat: 12.8230,
+            lng: 80.0444
+          });
           toast({
-            title: "Location access denied",
-            description: "Please enable location access to use directions feature",
-            variant: "destructive",
+            title: "Using default location",
+            description: "We've set a default location near SRM campus. Enable location access for better results.",
+            variant: "default",
           });
         }
       );
+    } else {
+      // Fallback for browsers that don't support geolocation
+      setUserLocation({
+        lat: 12.8230,
+        lng: 80.0444
+      });
     }
   }, [toast]);
 
@@ -70,6 +81,8 @@ const CampusNavigate = () => {
         origin: userLocation,
         destination: selectedLocation.position,
         travelMode: google.maps.TravelMode.WALKING,
+        provideRouteAlternatives: true,
+        optimizeWaypoints: true,
       });
       setDirections(result);
       toast({
@@ -77,9 +90,10 @@ const CampusNavigate = () => {
         description: `Route to ${selectedLocation.name} found`,
       });
     } catch (error) {
+      console.error("Direction service error:", error);
       toast({
         title: "Error getting directions",
-        description: "Could not calculate route to the selected location",
+        description: "Could not calculate route to the selected location. Try selecting a closer building.",
         variant: "destructive",
       });
     } finally {
@@ -92,8 +106,8 @@ const CampusNavigate = () => {
     setDirections(null); // Clear existing directions when new location is selected
   };
 
-  if (loadError) return <div>Error loading maps</div>;
-  if (!isLoaded) return <div>Loading maps...</div>;
+  if (loadError) return <div className="p-10 text-center text-red-600">Error loading maps: {loadError.message}</div>;
+  if (!isLoaded) return <div className="p-10 text-center text-blue-600">Loading maps...</div>;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">

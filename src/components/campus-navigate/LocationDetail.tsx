@@ -18,6 +18,21 @@ export const LocationDetail = ({ selectedLocation, directions }: LocationDetailP
           <p className="text-sm text-blue-700">
             {directions?.routes[0]?.legs[0]?.distance?.text || 'Select Get Directions to calculate distance'}
           </p>
+          {directions?.routes[0]?.legs[0]?.steps && (
+            <div className="mt-2 text-sm text-blue-800">
+              <p className="font-medium">Steps:</p>
+              <ol className="list-decimal pl-5 mt-1 space-y-1">
+                {directions.routes[0].legs[0].steps.slice(0, 3).map((step, index) => (
+                  <li key={index} 
+                      dangerouslySetInnerHTML={{ __html: step.instructions }}
+                      className="text-blue-700" />
+                ))}
+                {directions.routes[0].legs[0].steps.length > 3 && (
+                  <li className="text-blue-600 italic">...and {directions.routes[0].legs[0].steps.length - 3} more steps</li>
+                )}
+              </ol>
+            </div>
+          )}
         </div>
         {directions?.routes[0]?.legs[0]?.duration && (
           <Badge className="bg-amber-100 text-amber-800 border border-amber-200 px-3 py-1">
