@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Brain, Calendar, Map } from "lucide-react";
+import { Home, Brain, Calendar, Map } from "lucide-react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
 const Dashboard = () => {
@@ -19,6 +19,12 @@ const Dashboard = () => {
   const location = useLocation();
 
   const menuItems = [
+    {
+      title: "Home",
+      path: "/dashboard",
+      icon: Home,
+      exact: true
+    },
     {
       title: "AI Study Assistant",
       path: "/dashboard/study",
@@ -38,18 +44,26 @@ const Dashboard = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gradient-to-b from-gray-50 to-gray-100">
-        <Sidebar>
+      <div className="min-h-screen flex w-full bg-gradient-to-b from-blue-50 to-white">
+        <Sidebar className="border-r border-blue-200">
           <SidebarContent>
+            <div className="p-4 mb-4">
+              <h2 className="text-xl font-bold text-blue-900">SRM Campus Connect</h2>
+            </div>
             <SidebarGroup>
-              <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+              <SidebarGroupLabel className="text-blue-700">Navigation</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   {menuItems.map((item) => (
                     <SidebarMenuItem key={item.path}>
                       <SidebarMenuButton
                         onClick={() => navigate(item.path)}
-                        className={location.pathname === item.path ? "bg-accent" : ""}
+                        className={
+                          (item.exact && location.pathname === "/dashboard") || 
+                          (!item.exact && location.pathname === item.path) 
+                            ? "bg-blue-100 text-blue-900" 
+                            : "text-blue-700 hover:bg-blue-50"
+                        }
                       >
                         <item.icon className="w-5 h-5" />
                         <span>{item.title}</span>
@@ -62,7 +76,7 @@ const Dashboard = () => {
           </SidebarContent>
         </Sidebar>
         <main className="flex-1 p-6">
-          <SidebarTrigger />
+          <SidebarTrigger className="mb-4 text-blue-700 hover:text-blue-900" />
           <div className="mt-4">
             <Outlet />
           </div>
