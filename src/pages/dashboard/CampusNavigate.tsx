@@ -9,6 +9,8 @@ import { CampusLocation, locations } from '@/components/campus-navigate/types';
 
 const libraries = ["places"];
 
+const GOOGLE_MAPS_API_KEY = "AIzaSyDdcbZ1m2oNWxmcB3KeHP9YFT0PviH25Tc";
+
 const CampusNavigate = () => {
   const { toast } = useToast();
   const [selectedLocation, setSelectedLocation] = useState<CampusLocation | null>(null);
@@ -17,7 +19,7 @@ const CampusNavigate = () => {
   const [isLoadingDirections, setIsLoadingDirections] = useState(false);
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
     libraries: libraries as any,
   });
 
