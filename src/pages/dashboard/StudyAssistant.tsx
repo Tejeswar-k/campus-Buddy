@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Lightbulb, BookOpen, History, Zap } from "lucide-react";
 
 const StudyAssistant = () => {
   const [query, setQuery] = useState("");
@@ -31,9 +31,9 @@ const StudyAssistant = () => {
       // In a real application, this would call your actual API endpoint
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
       
-      // Generate a sample response based on the query
-      const sampleResponse = generateSampleResponse(query);
-      setResponse(sampleResponse);
+      // Generate a comprehensive response based on the query
+      const generatedResponse = generateComprehensiveResponse(query);
+      setResponse(generatedResponse);
       
       toast({
         title: "Response generated",
@@ -51,8 +51,8 @@ const StudyAssistant = () => {
     }
   };
 
-  // Enhanced function to generate academic responses
-  const generateSampleResponse = (query: string): string => {
+  // Enhanced function to generate comprehensive academic and general knowledge responses
+  const generateComprehensiveResponse = (query: string): string => {
     const normalizedQuery = query.toLowerCase();
     
     // SRM University related queries
@@ -105,23 +105,58 @@ const StudyAssistant = () => {
       return "Medical education at SRM includes:\n\n1. Basic Sciences: Anatomy, physiology, biochemistry, microbiology\n2. Clinical Sciences: Internal medicine, surgery, pediatrics, obstetrics\n3. Diagnostic Methods: Laboratory diagnostics, imaging techniques\n4. Therapeutics: Pharmacology, treatment protocols, intervention techniques\n5. Community Medicine: Public health, epidemiology, preventive medicine\n6. Medical Ethics: Patient rights, confidentiality, ethical dilemmas\n7. Clinical Training: Hospital rotations, patient interaction, case studies\n\nThe program follows a curriculum that integrates theoretical knowledge with practical clinical experience in the university's teaching hospital.";
     }
     
-    // General academic query response
-    return "I'm your AI Study Assistant. I can help you with information about academic subjects, study techniques, or university-related questions. Your query was about \"" + query + "\" - please be more specific with your question, and I'll provide a more detailed response on that topic. You can ask about:\n\n- Specific subjects (Math, Physics, Engineering, Computer Science, etc.)\n- Study techniques and exam preparation\n- SRM University programs and facilities\n- Career guidance in your field of study";
+    // History related queries
+    if (normalizedQuery.includes("history") || normalizedQuery.includes("historical") || normalizedQuery.includes("ancient") || normalizedQuery.includes("civilization")) {
+      return "Historical studies encompass various periods and civilizations:\n\n1. Ancient Civilizations: Mesopotamia, Egypt, Greece, Rome, China, and India\n2. Medieval Period: European feudalism, Islamic Golden Age, Byzantine Empire\n3. Renaissance and Enlightenment: Scientific revolution, arts and cultural developments\n4. Modern History: Industrial Revolution, World Wars, Cold War, Decolonization\n5. Contemporary History: Globalization, technological advancements, current geopolitics\n\nHistorical analysis involves examining primary sources, understanding historiography, and contextualizing events within broader social, economic, and political frameworks.";
+    }
+    
+    // Geography and environmental science queries
+    if (normalizedQuery.includes("geography") || normalizedQuery.includes("environment") || normalizedQuery.includes("climate") || normalizedQuery.includes("ecosystem")) {
+      return "Geography and environmental science cover:\n\n1. Physical Geography: Landforms, climate systems, natural disasters, biogeography\n2. Human Geography: Population patterns, urbanization, cultural landscapes\n3. Environmental Science: Ecosystems, biodiversity, conservation biology\n4. Climate Science: Global climate patterns, climate change, atmospheric processes\n5. Geographic Information Systems (GIS): Spatial analysis, remote sensing, cartography\n6. Sustainable Development: Resource management, environmental policy, green technology\n\nThese fields are increasingly important for addressing global challenges like climate change, biodiversity loss, and sustainable urban development.";
+    }
+    
+    // Literature and language queries
+    if (normalizedQuery.includes("literature") || normalizedQuery.includes("language") || normalizedQuery.includes("writing") || normalizedQuery.includes("grammar")) {
+      return "Literature and language studies include:\n\n1. Literary Theory: Approaches to analyzing and interpreting texts\n2. World Literature: Major works and authors across different cultures and time periods\n3. Linguistics: Phonetics, syntax, semantics, and language acquisition\n4. Comparative Literature: Cross-cultural literary traditions and influences\n5. Creative Writing: Fiction, poetry, drama, and non-fiction techniques\n6. Rhetoric and Composition: Persuasive writing, argumentation, and style\n\nThese disciplines develop critical thinking, communication skills, and cultural awareness through the study of language and literary expression.";
+    }
+    
+    // Philosophy and ethics queries
+    if (normalizedQuery.includes("philosophy") || normalizedQuery.includes("ethics") || normalizedQuery.includes("moral") || normalizedQuery.includes("metaphysics")) {
+      return "Philosophy encompasses various branches:\n\n1. Metaphysics: Nature of reality, existence, time, and space\n2. Epistemology: Theory of knowledge, belief, and justification\n3. Ethics: Moral principles, values, and normative theories\n4. Logic: Principles of valid reasoning and argumentation\n5. Political Philosophy: Justice, rights, authority, and governance\n6. Philosophy of Mind: Consciousness, identity, and mental processes\n7. Applied Ethics: Bioethics, business ethics, environmental ethics\n\nPhilosophical inquiry develops critical thinking skills and helps address fundamental questions about human existence, knowledge, and values.";
+    }
+    
+    // Psychology queries
+    if (normalizedQuery.includes("psychology") || normalizedQuery.includes("mental") || normalizedQuery.includes("behavior") || normalizedQuery.includes("cognitive")) {
+      return "Psychology explores various aspects of human behavior and mental processes:\n\n1. Cognitive Psychology: Perception, attention, memory, and problem-solving\n2. Developmental Psychology: Growth and change across the lifespan\n3. Social Psychology: Interpersonal behavior, group dynamics, and social influence\n4. Clinical Psychology: Assessment, diagnosis, and treatment of mental disorders\n5. Neuropsychology: Brain-behavior relationships and neural mechanisms\n6. Personality Psychology: Individual differences and trait theories\n7. Research Methods: Experimental design, statistical analysis, and ethical considerations\n\nPsychological principles have applications in education, healthcare, business, and many other fields.";
+    }
+    
+    // Artificial Intelligence queries
+    if (normalizedQuery.includes("artificial intelligence") || normalizedQuery.includes("ai") || normalizedQuery.includes("machine learning") || normalizedQuery.includes("neural network")) {
+      return "Artificial Intelligence encompasses multiple subfields:\n\n1. Machine Learning: Algorithms that improve through experience\n2. Deep Learning: Neural network architectures with multiple layers\n3. Natural Language Processing: Text analysis, generation, and understanding\n4. Computer Vision: Image and video analysis and interpretation\n5. Reinforcement Learning: Decision-making through rewards and penalties\n6. AI Ethics: Fairness, accountability, transparency, and safety concerns\n7. Applied AI: Industry applications in healthcare, finance, transportation, etc.\n\nAI technologies continue to advance rapidly, transforming numerous industries and creating new research opportunities.";
+    }
+    
+    // Economics and finance queries
+    if (normalizedQuery.includes("economics") || normalizedQuery.includes("finance") || normalizedQuery.includes("market") || normalizedQuery.includes("banking")) {
+      return "Economics and finance cover:\n\n1. Microeconomics: Individual market behavior, supply and demand, price theory\n2. Macroeconomics: National economies, GDP, inflation, monetary policy\n3. International Economics: Trade, global markets, exchange rates\n4. Corporate Finance: Capital structure, investment decisions, risk management\n5. Banking: Financial intermediation, credit creation, central banking\n6. Financial Markets: Stock, bond, and derivative markets, market efficiency\n7. Economic Development: Growth theories, inequality, poverty reduction\n\nThese disciplines provide analytical frameworks for understanding economic systems and financial decision-making at individual and institutional levels.";
+    }
+    
+    // General knowledge response
+    return "I'm your AI Academic Assistant, designed to help with a wide range of subjects including:\n\n• Mathematics and Sciences (Physics, Chemistry, Biology)\n• Engineering and Computer Science\n• Medicine and Healthcare\n• Business and Management\n• Humanities (History, Literature, Philosophy)\n• Social Sciences (Psychology, Economics, Political Science)\n• Study techniques and exam preparation\n• SRM University information\n\nYour query was about \"" + query + "\" - please try asking a more specific question about any academic subject, and I'll provide a detailed response tailored to your needs.";
   };
 
   return (
     <div className="max-w-4xl mx-auto p-6">
       <Card className="border-blue-200 shadow-md">
         <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200">
-          <CardTitle className="text-2xl text-blue-900">AI Study Assistant</CardTitle>
+          <CardTitle className="text-2xl text-blue-900">AI Academic Assistant</CardTitle>
           <CardDescription className="text-blue-700">
-            Get help with your studies, ask questions, or get explanations on any topic
+            Ask any academic question - from math and science to humanities and beyond
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 p-6 bg-white">
           <form onSubmit={handleSubmit} className="space-y-4">
             <Textarea
-              placeholder="Ask anything about your studies..."
+              placeholder="Ask about any subject, topic, or academic question..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="min-h-[120px] border-blue-200 focus:border-blue-400 focus:ring-blue-300"
@@ -134,17 +169,26 @@ const StudyAssistant = () => {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Getting Response...
+                  Generating Response...
                 </>
               ) : (
-                "Get Help"
+                <>
+                  <Zap className="mr-2 h-4 w-4" />
+                  Get Answer
+                </>
               )}
             </Button>
           </form>
 
           {response && (
             <Card className="mt-6 bg-amber-50 border-amber-200">
-              <CardContent className="pt-6">
+              <CardHeader className="pb-2 border-b border-amber-200">
+                <CardTitle className="text-lg text-amber-900 flex items-center">
+                  <BookOpen className="mr-2 h-5 w-5" />
+                  Academic Response
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
                 <div className="prose max-w-none text-blue-900">
                   {response.split('\n').map((paragraph, index) => (
                     <p key={index} className="mb-4">{paragraph}</p>
@@ -153,6 +197,42 @@ const StudyAssistant = () => {
               </CardContent>
             </Card>
           )}
+          
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-3">
+            <Card className="bg-blue-50 border-blue-200">
+              <CardContent className="p-4">
+                <div className="flex items-center text-blue-800 font-medium">
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  Academic Subjects
+                </div>
+                <p className="text-sm text-blue-700 mt-1">
+                  Math, Science, Engineering, Humanities, and more
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="bg-green-50 border-green-200">
+              <CardContent className="p-4">
+                <div className="flex items-center text-green-800 font-medium">
+                  <Lightbulb className="mr-2 h-4 w-4" />
+                  Study Techniques
+                </div>
+                <p className="text-sm text-green-700 mt-1">
+                  Exam prep, note-taking, memory improvement tips
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="bg-purple-50 border-purple-200">
+              <CardContent className="p-4">
+                <div className="flex items-center text-purple-800 font-medium">
+                  <History className="mr-2 h-4 w-4" />
+                  SRM Resources
+                </div>
+                <p className="text-sm text-purple-700 mt-1">
+                  Campus info, courses, departments, facilities
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </CardContent>
       </Card>
     </div>
