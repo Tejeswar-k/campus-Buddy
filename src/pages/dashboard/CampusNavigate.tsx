@@ -9,7 +9,7 @@ import { CampusLocation, locations } from '@/components/campus-navigate/types';
 
 const libraries = ["places"];
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyDdcbZ1m2oNWxmcB3KeHP9YFT0PviH25Tc";
+const GOOGLE_MAPS_API_KEY = "AIzaSyC367Wma68DjCj8lU4p1_J8YXX0VTUWXM4";
 
 const CampusNavigate = () => {
   const { toast } = useToast();
