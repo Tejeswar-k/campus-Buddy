@@ -2,16 +2,58 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, BookOpen, Code, Terminal, Database, Server, Shield, Cloud, ExternalLink, AlertTriangle } from "lucide-react";
-import { getAIResponse } from "@/services/aiService";
+import { Loader2, BookOpen, Code, Terminal, Database, Server, Shield, Cloud, Key, MessageSquare } from "lucide-react";
+import { getAIResponse, setGeminiApiKey, getGeminiApiKey } from "@/services/aiService";
+import { Input } from "@/components/ui/input";
 
 const StudyAssistant = () => {
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [apiKey, setApiKey] = useState("");
+  const [isKeySet, setIsKeySet] = useState(false);
   const { toast } = useToast();
+
+  // Check if API key is already set in localStorage on component mount
+  useEffect(() => {
+    const savedKey = getGeminiApiKey();
+    if (savedKey) {
+      setApiKey(savedKey);
+      setIsKeySet(true);
+    }
+  }, []);
+
+  const handleSetApiKey = () => {
+    if (!apiKey.trim()) {
+      toast({
+        title: "Empty API key",
+        description: "Please enter your Gemini API key",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setGeminiApiKey(apiKey);
+    setIsKeySet(true);
+    toast({
+      title: "API key set",
+      description: "Gemini API key has been set successfully",
+      duration: 3000,
+    });
+  };
+
+  const handleClearApiKey = () => {
+    setGeminiApiKey('');
+    setApiKey('');
+    setIsKeySet(false);
+    toast({
+      title: "API key cleared",
+      description: "Your Gemini API key has been removed",
+      duration: 3000,
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,20 +66,29 @@ const StudyAssistant = () => {
       return;
     }
 
+    if (!isKeySet) {
+      toast({
+        title: "API key required",
+        description: "Please set your Gemini API key first",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     setResponse("");
     
     try {
-      console.log("Sending query to PartyRock:", query);
+      console.log("Sending query to Gemini AI:", query);
       const result = await getAIResponse(query);
       
       if (result.success && result.data) {
         console.log("Received response:", result.data);
         setResponse(result.data);
         toast({
-          title: "WISE-UP Assistant",
-          description: "Opening your query in PartyRock AI assistant.",
-          duration: 5000,
+          title: "Response generated",
+          description: "Your answer is ready!",
+          duration: 3000,
         });
       } else {
         throw new Error(result.error || 'Failed to get response');
@@ -46,7 +97,7 @@ const StudyAssistant = () => {
       console.error("Error generating response:", error);
       toast({
         title: "Error",
-        description: "Failed to get response. Please try again or check your internet connection.",
+        description: error instanceof Error ? error.message : "Failed to get response. Please try again.",
         variant: "destructive",
         duration: 5000,
       });
@@ -61,31 +112,72 @@ const StudyAssistant = () => {
         <CardHeader className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white border-b border-blue-800">
           <CardTitle className="text-2xl">WISE-UP BTech CS AI Assistant</CardTitle>
           <CardDescription className="text-blue-100">
-            Your specialized Computer Science learning companion powered by AWS PartyRock
+            Your specialized Computer Science learning companion powered by Google Gemini AI
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 p-6 bg-white">
+          {/* API Key Management Section */}
+          <Card className="border-blue-100">
+            <CardContent className="p-4 mt-4">
+              <div className="mb-2 font-medium flex items-center text-blue-800">
+                <Key className="mr-2 h-4 w-4" />
+                API Key Management
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2 mt-2">
+                <Input 
+                  type="password"
+                  placeholder="Enter Gemini API key"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  className="flex-grow"
+                  disabled={isLoading}
+                />
+                <Button 
+                  onClick={handleSetApiKey}
+                  disabled={isLoading || !apiKey.trim()}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  Set API Key
+                </Button>
+                {isKeySet && (
+                  <Button 
+                    onClick={handleClearApiKey}
+                    disabled={isLoading}
+                    variant="outline"
+                    className="text-red-600 border-red-200 hover:bg-red-50"
+                  >
+                    Clear Key
+                  </Button>
+                )}
+              </div>
+              {isKeySet && (
+                <p className="text-sm text-green-600 mt-2">✓ Gemini API key is set</p>
+              )}
+            </CardContent>
+          </Card>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <Textarea
               placeholder="Ask about any Computer Science topic (DSA, OS, Software Engineering, Databases, etc)..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="min-h-[120px] border-blue-200 focus:border-blue-400 focus:ring-blue-300"
+              disabled={!isKeySet || isLoading}
             />
             <Button 
               type="submit" 
-              disabled={isLoading}
+              disabled={!isKeySet || isLoading}
               className="bg-blue-600 hover:bg-blue-700 text-white w-full"
             >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing Query...
+                  Generating Response...
                 </>
               ) : (
                 <>
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Get Answer in PartyRock
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Get CS Answer
                 </>
               )}
             </Button>
@@ -96,12 +188,11 @@ const StudyAssistant = () => {
               <CardHeader className="pb-2 border-b border-gray-200 bg-gray-100">
                 <CardTitle className="text-lg text-gray-900 flex items-center">
                   <Code className="mr-2 h-5 w-5" />
-                  CS Assistant Info
+                  CS Assistant Response
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4 prose max-w-none">
-                <div className="whitespace-pre-line text-gray-800 flex items-center">
-                  <AlertTriangle className="mr-2 h-5 w-5 text-amber-500" />
+                <div className="whitespace-pre-line text-gray-800">
                   {response}
                 </div>
               </CardContent>
