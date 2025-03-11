@@ -7,24 +7,26 @@ interface AIResponse {
 
 export const getAIResponse = async (query: string): Promise<AIResponse> => {
   try {
-    // For now, we'll use the AWS PartyRock endpoint
-    // In a production environment, this should be configured through environment variables
-    const response = await fetch('https://partyrock.aws/u/AMARNATH269/T1dMkUA1k/WISE-UP', {
+    // Configure the PartyRock endpoint correctly
+    const response = await fetch('https://api.partyrock.aws/v1/run-app', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ prompt: query }),
+      body: JSON.stringify({
+        appId: 'T1dMkUA1k',
+        input: { prompt: query }
+      }),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get response from AI service');
+      throw new Error(`Failed to get response from AI service: ${response.status}`);
     }
 
-    const data = await response.text();
+    const jsonResponse = await response.json();
     return {
       success: true,
-      data,
+      data: jsonResponse.output || jsonResponse.response || jsonResponse.result || JSON.stringify(jsonResponse),
     };
   } catch (error) {
     console.error('Error fetching AI response:', error);
