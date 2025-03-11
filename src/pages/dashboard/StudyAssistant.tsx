@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, BookOpen, Code, Terminal, Database, Server, Shield, Cloud } from "lucide-react";
+import { Loader2, BookOpen, Code, Terminal, Database, Server, Shield, Cloud, ExternalLink, AlertTriangle } from "lucide-react";
 import { getAIResponse } from "@/services/aiService";
 
 const StudyAssistant = () => {
@@ -35,8 +35,9 @@ const StudyAssistant = () => {
         console.log("Received response:", result.data);
         setResponse(result.data);
         toast({
-          title: "Response generated",
-          description: "Your answer is ready!",
+          title: "WISE-UP Assistant",
+          description: "Opening your query in PartyRock AI assistant.",
+          duration: 5000,
         });
       } else {
         throw new Error(result.error || 'Failed to get response');
@@ -45,8 +46,9 @@ const StudyAssistant = () => {
       console.error("Error generating response:", error);
       toast({
         title: "Error",
-        description: "Failed to get response. Please try again.",
+        description: "Failed to get response. Please try again or check your internet connection.",
         variant: "destructive",
+        duration: 5000,
       });
     } finally {
       setIsLoading(false);
@@ -78,12 +80,12 @@ const StudyAssistant = () => {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Generating Response...
+                  Processing Query...
                 </>
               ) : (
                 <>
-                  <Terminal className="mr-2 h-4 w-4" />
-                  Get Answer
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Get Answer in PartyRock
                 </>
               )}
             </Button>
@@ -94,11 +96,12 @@ const StudyAssistant = () => {
               <CardHeader className="pb-2 border-b border-gray-200 bg-gray-100">
                 <CardTitle className="text-lg text-gray-900 flex items-center">
                   <Code className="mr-2 h-5 w-5" />
-                  CS Assistant Response
+                  CS Assistant Info
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4 prose max-w-none">
-                <div className="whitespace-pre-line text-gray-800">
+                <div className="whitespace-pre-line text-gray-800 flex items-center">
+                  <AlertTriangle className="mr-2 h-5 w-5 text-amber-500" />
                   {response}
                 </div>
               </CardContent>
