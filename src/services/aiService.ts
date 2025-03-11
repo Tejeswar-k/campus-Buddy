@@ -1,74 +1,40 @@
 
+import { supabase } from "@/integrations/supabase/client";
+
 interface AIResponse {
   success: boolean;
   data?: string;
   error?: string;
 }
 
-// Store API key in memory for this session only
-let geminiApiKey = localStorage.getItem('gemini_api_key') || '';
-
+// We no longer need to store API key in localStorage
 export const setGeminiApiKey = (apiKey: string) => {
-  geminiApiKey = apiKey;
-  localStorage.setItem('gemini_api_key', apiKey);
-  return geminiApiKey;
+  // This function is kept for backward compatibility
+  // but doesn't actually store the API key anymore
+  localStorage.setItem('gemini_api_key', 'PLACEHOLDER');
+  return 'PLACEHOLDER';
 };
 
 export const getGeminiApiKey = () => {
-  return geminiApiKey;
+  // We now always return a placeholder since the real API key
+  // is stored securely in Supabase
+  return localStorage.getItem('gemini_api_key') || 'PLACEHOLDER';
 };
 
 export const getAIResponse = async (query: string): Promise<AIResponse> => {
   try {
-    console.log("Preparing to send query to Gemini AI:", query);
+    console.log("Sending query to Supabase Edge Function:", query);
     
-    // Check if we have an API key
-    if (!geminiApiKey) {
-      return {
-        success: false,
-        error: "Gemini API key is not set. Please set your API key first.",
-      };
-    }
-
-    // Configure the Gemini API request
-    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': geminiApiKey,
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: `You are WISE-UP, a specialized Computer Science learning assistant for BTech students. 
-                Answer the following CS-related question with accurate, educational information: ${query}`
-              }
-            ]
-          }
-        ],
-        generationConfig: {
-          temperature: 0.7,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 2048,
-        },
-      }),
+    // Call the Supabase Edge Function
+    const { data, error } = await supabase.functions.invoke('gemini-ai', {
+      body: { query },
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Gemini API error: ${errorData.error?.message || response.statusText}`);
-    }
-
-    const jsonResponse = await response.json();
-    const textResponse = jsonResponse.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated';
     
-    return {
-      success: true,
-      data: textResponse,
-    };
+    if (error) {
+      throw new Error(`Edge Function error: ${error.message}`);
+    }
+    
+    return data as AIResponse;
   } catch (error) {
     console.error('Error handling AI response:', error);
     return {
