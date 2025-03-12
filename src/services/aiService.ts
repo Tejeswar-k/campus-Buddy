@@ -31,8 +31,16 @@ export const getAIResponse = async (query: string): Promise<AIResponse> => {
     });
     
     if (error) {
+      console.error("Edge Function error:", error);
       throw new Error(`Edge Function error: ${error.message}`);
     }
+    
+    if (!data) {
+      console.error("No data returned from Edge Function");
+      throw new Error("No data returned from Edge Function");
+    }
+    
+    console.log("Received response from Edge Function:", data);
     
     return data as AIResponse;
   } catch (error) {

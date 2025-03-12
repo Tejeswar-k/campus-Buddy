@@ -56,11 +56,19 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error("Gemini API error:", errorData);
       throw new Error(`Gemini API error: ${errorData.error?.message || response.statusText}`);
     }
 
     const jsonResponse = await response.json();
-    const textResponse = jsonResponse.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated';
+    console.log("Received response from Gemini API");
+    
+    if (!jsonResponse.candidates || jsonResponse.candidates.length === 0) {
+      console.error("No candidates in response:", jsonResponse);
+      throw new Error("No response generated from Gemini API");
+    }
+    
+    const textResponse = jsonResponse.candidates[0]?.content?.parts?.[0]?.text || 'No response generated';
     
     return new Response(
       JSON.stringify({ 
