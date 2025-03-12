@@ -18,6 +18,7 @@ declare module 'leaflet' {
     
     interface Control {
       setWaypoints(waypoints: L.LatLng[]): void;
+      on(event: string, fn: Function): Control;
     }
     
     // Add OSRMv1 router class to the declaration

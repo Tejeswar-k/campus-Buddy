@@ -37,7 +37,7 @@ const Login = () => {
                 }}
               />
             </div>
-            <CardTitle className="text-2xl text-center text-blue-900">Login to Campus Companion</CardTitle>
+            <CardTitle className="text-2xl text-center text-blue-900">Login to Campus Buddy</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
