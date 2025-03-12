@@ -14,9 +14,15 @@ import { useToast } from '@/components/ui/use-toast';
 // Extend the L namespace to include Routing for TypeScript
 declare module 'leaflet' {
   namespace Routing {
-    function control(options?: any): any;
+    function control(options?: any): Control;
+    
     interface Control {
       setWaypoints(waypoints: L.LatLng[]): void;
+    }
+    
+    // Add OSRMv1 router class to the declaration
+    class OSRMv1 {
+      constructor(options?: any);
     }
   }
 }
