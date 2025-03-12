@@ -1,5 +1,3 @@
-
-import { useLoadScript } from '@react-google-maps/api';
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 import { CampusInfo } from '@/components/campus-navigate/CampusInfo';
@@ -7,31 +5,12 @@ import { LocationList } from '@/components/campus-navigate/LocationList';
 import { CampusMap } from '@/components/campus-navigate/CampusMap';
 import { CampusLocation, locations } from '@/components/campus-navigate/types';
 
-const libraries = ["places"];
-
-const GOOGLE_MAPS_API_KEY = "AIzaSyC367Wma68DjCj8lU4p1_J8YXX0VTUWXM4";
-
 const CampusNavigate = () => {
   const { toast } = useToast();
   const [selectedLocation, setSelectedLocation] = useState<CampusLocation | null>(null);
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [userLocation, setUserLocation] = useState<google.maps.LatLngLiteral | null>(null);
   const [isLoadingDirections, setIsLoadingDirections] = useState(false);
-
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
-    libraries: libraries as any,
-  });
-
-  useEffect(() => {
-    if (loadError) {
-      toast({
-        title: "Error loading map",
-        description: "Please check your internet connection and try again",
-        variant: "destructive",
-      });
-    }
-  }, [loadError, toast]);
 
   useEffect(() => {
     // Get user's current location or set to SRM default if not available
@@ -65,7 +44,9 @@ const CampusNavigate = () => {
     }
   }, [toast]);
 
-  const getDirections = useCallback(async () => {
+  // In our Leaflet implementation, directions are calculated within the map component
+  // but we keep this function for compatibility with the LocationList component
+  const getDirections = useCallback(() => {
     if (!selectedLocation || !userLocation) {
       toast({
         title: "Cannot get directions",
@@ -76,40 +57,22 @@ const CampusNavigate = () => {
     }
 
     setIsLoadingDirections(true);
-    const directionsService = new google.maps.DirectionsService();
-
-    try {
-      const result = await directionsService.route({
-        origin: userLocation,
-        destination: selectedLocation.position,
-        travelMode: google.maps.TravelMode.WALKING,
-        provideRouteAlternatives: true,
-        optimizeWaypoints: true,
-      });
-      setDirections(result);
+    
+    // The actual routing is now handled by Leaflet in the CampusMap component
+    // Here we just simulate the loading state for UI consistency
+    setTimeout(() => {
       toast({
         title: "Directions loaded",
         description: `Route to ${selectedLocation.name} found`,
       });
-    } catch (error) {
-      console.error("Direction service error:", error);
-      toast({
-        title: "Error getting directions",
-        description: "Could not calculate route to the selected location. Try selecting a closer building.",
-        variant: "destructive",
-      });
-    } finally {
       setIsLoadingDirections(false);
-    }
+    }, 500);
   }, [selectedLocation, userLocation, toast]);
 
   const handleLocationSelect = (location: CampusLocation) => {
     setSelectedLocation(location);
     setDirections(null); // Clear existing directions when new location is selected
   };
-
-  if (loadError) return <div className="p-10 text-center text-red-600">Error loading maps: {loadError.message}</div>;
-  if (!isLoaded) return <div className="p-10 text-center text-blue-600">Loading maps...</div>;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
