@@ -8,6 +8,16 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import 'leaflet-routing-machine';
 
+// Extend the L namespace to include Routing for TypeScript
+declare module 'leaflet' {
+  namespace Routing {
+    function control(options?: any): any;
+    interface Control {
+      setWaypoints(waypoints: L.LatLng[]): void;
+    }
+  }
+}
+
 interface CampusMapProps {
   selectedLocation: CampusLocation | null;
   directions: google.maps.DirectionsResult | null; // Keep for compatibility
