@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 import { CampusInfo } from '@/components/campus-navigate/CampusInfo';
@@ -12,14 +13,17 @@ const CampusNavigate = () => {
   const [userLocation, setUserLocation] = useState<google.maps.LatLngLiteral | null>(null);
   const [isLoadingDirections, setIsLoadingDirections] = useState(false);
 
-  useEffect(() => {
-    // Get user's current location or set to SRM default if not available
+  const getUserLocation = useCallback(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setUserLocation({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
+          });
+          toast({
+            title: "Location found",
+            description: "Using your current location for directions",
           });
         },
         () => {
@@ -43,6 +47,11 @@ const CampusNavigate = () => {
       });
     }
   }, [toast]);
+
+  // Initialize user location
+  useEffect(() => {
+    getUserLocation();
+  }, [getUserLocation]);
 
   // In our Leaflet implementation, directions are calculated within the map component
   // but we keep this function for compatibility with the LocationList component
@@ -74,6 +83,10 @@ const CampusNavigate = () => {
     setDirections(null); // Clear existing directions when new location is selected
   };
 
+  const refreshLocation = () => {
+    getUserLocation();
+  };
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       {/* SRM University Info Card */}
@@ -88,6 +101,7 @@ const CampusNavigate = () => {
             onGetDirections={getDirections}
             isLoadingDirections={isLoadingDirections}
             userLocation={userLocation}
+            onRefreshLocation={refreshLocation}
           />
         </div>
 

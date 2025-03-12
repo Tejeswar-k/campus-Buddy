@@ -1,5 +1,5 @@
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { center, locations, CampusLocation } from './types';
 import { LocationDetail } from './LocationDetail';
@@ -7,6 +7,9 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import 'leaflet-routing-machine';
+import { Button } from '@/components/ui/button';
+import { Navigation, LocateIcon, MapPinIcon, XCircle } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 // Extend the L namespace to include Routing for TypeScript
 declare module 'leaflet' {
@@ -31,10 +34,14 @@ export const CampusMap = ({
   userLocation,
   onLocationSelect
 }: CampusMapProps) => {
+  const { toast } = useToast();
   const mapRef = useRef<L.Map | null>(null);
   const routingControlRef = useRef<L.Routing.Control | null>(null);
   const markersRef = useRef<{[key: string]: L.Marker}>({});
   const userMarkerRef = useRef<L.Marker | null>(null);
+  const [routeActive, setRouteActive] = useState(false);
+  const [travelTime, setTravelTime] = useState<string | null>(null);
+  const [distance, setDistance] = useState<string | null>(null);
 
   // Initialize map
   useEffect(() => {
@@ -58,7 +65,7 @@ export const CampusMap = ({
         attribution: '&copy; OpenStreetMap contributors'
       }).addTo(map);
       
-      // Add routing control
+      // Add routing control but don't show it yet
       if (!routingControlRef.current) {
         routingControlRef.current = L.Routing.control({
           waypoints: [],
@@ -68,7 +75,29 @@ export const CampusMap = ({
           },
           show: false, // Hide the instruction panel
           addWaypoints: false, // Disable adding waypoints by clicking on the map
-          draggableWaypoints: false // Disable dragging waypoints
+          draggableWaypoints: false, // Disable dragging waypoints
+          createMarker: function() { return null; }, // Don't create default markers
+          router: new L.Routing.OSRMv1({
+            serviceUrl: 'https://router.project-osrm.org/route/v1',
+            profile: 'foot' // Use walking profile
+          })
+        }).on('routesfound', function(e) {
+          const routes = e.routes;
+          const summary = routes[0].summary;
+          // Convert time from seconds to minutes
+          const timeInMinutes = Math.round(summary.totalTime / 60);
+          const timeString = `${timeInMinutes} min`;
+          setTravelTime(timeString);
+          
+          // Convert distance from meters to kilometers if over 1000m
+          const distanceInMeters = summary.totalDistance;
+          let distanceString;
+          if (distanceInMeters >= 1000) {
+            distanceString = `${(distanceInMeters / 1000).toFixed(1)} km`;
+          } else {
+            distanceString = `${Math.round(distanceInMeters)} m`;
+          }
+          setDistance(distanceString);
         }).addTo(map);
       }
 
@@ -105,7 +134,7 @@ export const CampusMap = ({
         userMarkerRef.current = null;
       }
     };
-  }, [onLocationSelect]);
+  }, [onLocationSelect, toast]);
 
   // Update view when selected location changes
   useEffect(() => {
@@ -117,8 +146,16 @@ export const CampusMap = ({
       if (marker) {
         marker.bindPopup(`<b>${selectedLocation.name}</b>`).openPopup();
       }
+      
+      // Clear route when selecting a new location
+      if (routeActive) {
+        setRouteActive(false);
+        if (routingControlRef.current) {
+          routingControlRef.current.setWaypoints([]);
+        }
+      }
     }
-  }, [selectedLocation]);
+  }, [selectedLocation, routeActive]);
 
   // Update user location marker
   useEffect(() => {
@@ -132,30 +169,146 @@ export const CampusMap = ({
       userMarkerRef.current = L.marker([userLocation.lat, userLocation.lng], {
         icon: L.divIcon({
           className: 'custom-user-icon',
-          html: `<div style="background-color: #4285F4; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white;"></div>`,
-          iconSize: [18, 18],
-          iconAnchor: [9, 9]
+          html: `<div style="background-color: #4285F4; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.4);"></div>`,
+          iconSize: [22, 22],
+          iconAnchor: [11, 11]
         })
       }).addTo(mapRef.current);
+      
+      userMarkerRef.current.bindPopup('<b>Your Location</b>').openPopup();
     }
   }, [userLocation]);
 
-  // Update routing when user location or selected location changes
-  useEffect(() => {
-    if (routingControlRef.current && userLocation && selectedLocation) {
+  // Function to calculate route
+  const calculateRoute = () => {
+    if (!userLocation || !selectedLocation) {
+      toast({
+        title: "Cannot get directions",
+        description: "Please ensure location access is enabled and a destination is selected",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (routingControlRef.current) {
       routingControlRef.current.setWaypoints([
         L.latLng(userLocation.lat, userLocation.lng),
         L.latLng(selectedLocation.position.lat, selectedLocation.position.lng)
       ]);
-    } else if (routingControlRef.current) {
-      routingControlRef.current.setWaypoints([]);
+      setRouteActive(true);
+      
+      // Fit the map to show both points
+      if (mapRef.current) {
+        const bounds = L.latLngBounds(
+          L.latLng(userLocation.lat, userLocation.lng),
+          L.latLng(selectedLocation.position.lat, selectedLocation.position.lng)
+        );
+        mapRef.current.fitBounds(bounds, { padding: [50, 50] });
+      }
+      
+      toast({
+        title: "Directions loaded",
+        description: `Route to ${selectedLocation.name} found`,
+      });
     }
-  }, [userLocation, selectedLocation]);
+  };
+  
+  // Function to clear route
+  const clearRoute = () => {
+    if (routingControlRef.current) {
+      routingControlRef.current.setWaypoints([]);
+      setRouteActive(false);
+      setTravelTime(null);
+      setDistance(null);
+      
+      // Return to selected location view
+      if (mapRef.current && selectedLocation) {
+        mapRef.current.setView([selectedLocation.position.lat, selectedLocation.position.lng], 18);
+      }
+    }
+  };
+  
+  // Function to center on user location
+  const centerOnUser = () => {
+    if (mapRef.current && userLocation) {
+      mapRef.current.setView([userLocation.lat, userLocation.lng], 18);
+      if (userMarkerRef.current) {
+        userMarkerRef.current.openPopup();
+      }
+    } else {
+      toast({
+        title: "Location not available",
+        description: "Please enable location access in your browser",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <Card className="shadow-lg border-blue-200 h-full">
-      <CardContent className="p-0">
+      <CardContent className="p-0 relative">
         <div id="campus-map" className="h-[600px] rounded-xl overflow-hidden"></div>
+        
+        {/* Interactive Controls */}
+        <div className="absolute top-4 right-4 flex flex-col gap-2">
+          <Button
+            onClick={centerOnUser}
+            variant="outline"
+            size="icon"
+            className="bg-white shadow-md hover:bg-blue-50"
+            title="Center on your location"
+          >
+            <LocateIcon className="h-5 w-5 text-blue-600" />
+          </Button>
+          
+          {selectedLocation && (
+            <Button
+              onClick={() => mapRef.current?.setView([selectedLocation.position.lat, selectedLocation.position.lng], 18)}
+              variant="outline"
+              size="icon"
+              className="bg-white shadow-md hover:bg-blue-50"
+              title="Center on selected location"
+            >
+              <MapPinIcon className="h-5 w-5 text-red-600" />
+            </Button>
+          )}
+        </div>
+        
+        {selectedLocation && (
+          <div className="absolute bottom-20 left-0 right-0 mx-auto w-11/12 sm:w-3/4 md:w-2/3 lg:w-1/2 p-4 bg-white rounded-lg shadow-lg border border-blue-200">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-semibold text-blue-900">{selectedLocation.name}</h3>
+              {distance && travelTime && routeActive && (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-blue-700">{distance}</span>
+                  <span className="text-sm bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">{travelTime} walking</span>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex gap-2">
+              {!routeActive ? (
+                <Button 
+                  onClick={calculateRoute}
+                  className="w-full bg-blue-600 hover:bg-blue-700 gap-2"
+                  disabled={!userLocation}
+                >
+                  <Navigation className="h-4 w-4" />
+                  Get Directions
+                </Button>
+              ) : (
+                <Button 
+                  onClick={clearRoute}
+                  className="w-full bg-red-600 hover:bg-red-700 gap-2"
+                >
+                  <XCircle className="h-4 w-4" />
+                  Clear Route
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
+        
         <LocationDetail selectedLocation={selectedLocation} directions={directions} />
       </CardContent>
     </Card>

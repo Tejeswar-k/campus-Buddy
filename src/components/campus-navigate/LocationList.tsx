@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Navigation, Loader2, Map } from 'lucide-react';
+import { Navigation, Loader2, Map, RefreshCw } from 'lucide-react';
 import { locations, categoryColors, CampusLocation } from './types';
 
 interface LocationListProps {
@@ -13,6 +13,7 @@ interface LocationListProps {
   onGetDirections: () => void;
   isLoadingDirections: boolean;
   userLocation: google.maps.LatLngLiteral | null;
+  onRefreshLocation?: () => void;
 }
 
 export const LocationList = ({
@@ -20,7 +21,8 @@ export const LocationList = ({
   selectedLocation,
   onGetDirections,
   isLoadingDirections,
-  userLocation
+  userLocation,
+  onRefreshLocation
 }: LocationListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLocations, setFilteredLocations] = useState(locations);
@@ -49,13 +51,24 @@ export const LocationList = ({
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="mb-4">
+        <div className="mb-4 flex gap-2">
           <Input
             placeholder="Search for a building..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="border-blue-200 focus-visible:ring-blue-500"
           />
+          {onRefreshLocation && (
+            <Button 
+              onClick={onRefreshLocation}
+              variant="outline"
+              size="icon"
+              className="border-blue-200 hover:bg-blue-50"
+              title="Refresh your location"
+            >
+              <RefreshCw className="h-4 w-4 text-blue-700" />
+            </Button>
+          )}
         </div>
         <div className="h-[400px] overflow-y-auto pr-2 space-y-2">
           {filteredLocations.length > 0 ? (
