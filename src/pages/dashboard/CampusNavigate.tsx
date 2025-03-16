@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 import { CampusInfo } from '@/components/campus-navigate/CampusInfo';
@@ -11,6 +12,7 @@ const CampusNavigate = () => {
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [userLocation, setUserLocation] = useState<google.maps.LatLngLiteral | null>(null);
   const [isLoadingDirections, setIsLoadingDirections] = useState(false);
+  const [routeActive, setRouteActive] = useState(false);
 
   const getUserLocation = useCallback(() => {
     if (navigator.geolocation) {
@@ -52,8 +54,6 @@ const CampusNavigate = () => {
     getUserLocation();
   }, [getUserLocation]);
 
-  // In our Leaflet implementation, directions are calculated within the map component
-  // but we keep this function for compatibility with the LocationList component
   const getDirections = useCallback(() => {
     if (!selectedLocation || !userLocation) {
       toast({
@@ -65,6 +65,7 @@ const CampusNavigate = () => {
     }
 
     setIsLoadingDirections(true);
+    setRouteActive(true);
     
     // The actual routing is now handled by Leaflet in the CampusMap component
     // Here we just simulate the loading state for UI consistency
@@ -80,10 +81,15 @@ const CampusNavigate = () => {
   const handleLocationSelect = (location: CampusLocation) => {
     setSelectedLocation(location);
     setDirections(null); // Clear existing directions when new location is selected
+    setRouteActive(false); // Reset route state when selecting a new location
   };
 
   const refreshLocation = () => {
     getUserLocation();
+  };
+
+  const clearRoute = () => {
+    setRouteActive(false);
   };
 
   return (
@@ -110,6 +116,8 @@ const CampusNavigate = () => {
             directions={directions}
             userLocation={userLocation}
             onLocationSelect={handleLocationSelect}
+            routeActive={routeActive}
+            onClearRoute={clearRoute}
           />
         </div>
       </div>

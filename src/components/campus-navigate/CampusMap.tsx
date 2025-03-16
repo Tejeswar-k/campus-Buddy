@@ -34,20 +34,23 @@ interface CampusMapProps {
   directions: google.maps.DirectionsResult | null; // Keep for compatibility
   userLocation: google.maps.LatLngLiteral | null; // Keep for compatibility
   onLocationSelect: (location: CampusLocation) => void;
+  routeActive: boolean;
+  onClearRoute: () => void;
 }
 
 export const CampusMap = ({
   selectedLocation,
   directions,
   userLocation,
-  onLocationSelect
+  onLocationSelect,
+  routeActive,
+  onClearRoute
 }: CampusMapProps) => {
   const { toast } = useToast();
   const mapRef = useRef<L.Map | null>(null);
   const routingControlRef = useRef<L.Routing.Control | null>(null);
   const markersRef = useRef<{[key: string]: L.Marker}>({});
   const userMarkerRef = useRef<L.Marker | null>(null);
-  const [routeActive, setRouteActive] = useState(false);
   const [travelTime, setTravelTime] = useState<string | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
 
@@ -160,16 +163,8 @@ export const CampusMap = ({
       if (marker) {
         marker.bindPopup(`<b>${selectedLocation.name}</b>`).openPopup();
       }
-      
-      // Clear route when selecting a new location
-      if (routeActive) {
-        setRouteActive(false);
-        if (routingControlRef.current) {
-          routingControlRef.current.setWaypoints([]);
-        }
-      }
     }
-  }, [selectedLocation, routeActive]);
+  }, [selectedLocation]);
 
   // Update user location marker
   useEffect(() => {
@@ -193,23 +188,14 @@ export const CampusMap = ({
     }
   }, [userLocation]);
 
-  // Function to calculate route
-  const calculateRoute = () => {
-    if (!userLocation || !selectedLocation) {
-      toast({
-        title: "Cannot get directions",
-        description: "Please ensure location access is enabled and a destination is selected",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (routingControlRef.current) {
+  // Handle route activation
+  useEffect(() => {
+    if (routeActive && userLocation && selectedLocation && routingControlRef.current) {
+      // Set waypoints and calculate route
       routingControlRef.current.setWaypoints([
         L.latLng(userLocation.lat, userLocation.lng),
         L.latLng(selectedLocation.position.lat, selectedLocation.position.lng)
       ]);
-      setRouteActive(true);
       
       // Fit the map to show both points
       if (mapRef.current) {
@@ -219,28 +205,18 @@ export const CampusMap = ({
         );
         mapRef.current.fitBounds(bounds, { padding: [50, 50] });
       }
-      
-      toast({
-        title: "Directions loaded",
-        description: `Route to ${selectedLocation.name} found`,
-      });
-    }
-  };
-  
-  // Function to clear route
-  const clearRoute = () => {
-    if (routingControlRef.current) {
+    } else if (!routeActive && routingControlRef.current) {
+      // Clear route
       routingControlRef.current.setWaypoints([]);
-      setRouteActive(false);
       setTravelTime(null);
       setDistance(null);
       
-      // Return to selected location view
+      // Return to selected location view if available
       if (mapRef.current && selectedLocation) {
         mapRef.current.setView([selectedLocation.position.lat, selectedLocation.position.lng], 18);
       }
     }
-  };
+  }, [routeActive, userLocation, selectedLocation]);
   
   // Function to center on user location
   const centerOnUser = () => {
@@ -303,7 +279,27 @@ export const CampusMap = ({
             <div className="flex gap-2">
               {!routeActive ? (
                 <Button 
-                  onClick={calculateRoute}
+                  onClick={() => {
+                    if (!userLocation) {
+                      toast({
+                        title: "Cannot get directions",
+                        description: "Please ensure location access is enabled",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+                    if (userLocation && selectedLocation && routingControlRef.current) {
+                      routingControlRef.current.setWaypoints([
+                        L.latLng(userLocation.lat, userLocation.lng),
+                        L.latLng(selectedLocation.position.lat, selectedLocation.position.lng)
+                      ]);
+                      
+                      toast({
+                        title: "Directions loaded",
+                        description: `Route to ${selectedLocation.name} found`,
+                      });
+                    }
+                  }}
                   className="w-full bg-blue-600 hover:bg-blue-700 gap-2"
                   disabled={!userLocation}
                 >
@@ -312,7 +308,12 @@ export const CampusMap = ({
                 </Button>
               ) : (
                 <Button 
-                  onClick={clearRoute}
+                  onClick={() => {
+                    if (routingControlRef.current) {
+                      routingControlRef.current.setWaypoints([]);
+                      onClearRoute();
+                    }
+                  }}
                   className="w-full bg-red-600 hover:bg-red-700 gap-2"
                 >
                   <XCircle className="h-4 w-4" />
