@@ -19,6 +19,7 @@ declare module 'leaflet' {
     interface Control {
       setWaypoints(waypoints: L.LatLng[]): void;
       on(event: string, fn: Function): Control;
+      addTo(map: L.Map): Control;
     }
     
     // Add OSRMv1 router class to the declaration
@@ -88,7 +89,13 @@ export const CampusMap = ({
             serviceUrl: 'https://router.project-osrm.org/route/v1',
             profile: 'foot' // Use walking profile
           })
-        }).on('routesfound', function(e) {
+        });
+        
+        // Add the routing control to the map
+        routingControlRef.current.addTo(map);
+        
+        // Listen for route calculation results
+        routingControlRef.current.on('routesfound', function(e: any) {
           const routes = e.routes;
           const summary = routes[0].summary;
           // Convert time from seconds to minutes
@@ -105,7 +112,7 @@ export const CampusMap = ({
             distanceString = `${Math.round(distanceInMeters)} m`;
           }
           setDistance(distanceString);
-        }).addTo(map);
+        });
       }
 
       // Add location markers
