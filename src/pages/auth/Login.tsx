@@ -17,10 +17,6 @@ const Login = () => {
     navigate("/dashboard");
   };
 
-  const handleAIAssistant = () => {
-    window.location.href = "https://partyrock.aws/u/AMARNATH269/T1dMkUA1k/WISE-UP";
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 via-blue-100 to-blue-200 p-4">
       <motion.div
@@ -69,13 +65,6 @@ const Login = () => {
               </div>
               <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
                 Login
-              </Button>
-              <Button 
-                type="button" 
-                onClick={handleAIAssistant}
-                className="w-full mt-2 bg-amber-500 hover:bg-amber-600"
-              >
-                Access AI Assistant
               </Button>
               <p className="text-center text-sm text-blue-700">
                 Don't have an account?{" "}
