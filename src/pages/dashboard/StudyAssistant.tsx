@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, BookOpen, Code, Terminal, Database, Server, Shield, Cloud, MessageSquare } from "lucide-react";
+import { Loader2, BookOpen, Code, Terminal, Database, Server, Shield, Cloud, MessageSquare, ExternalLink } from "lucide-react";
 import { getAIResponse } from "@/services/aiService";
 
 const StudyAssistant = () => {
@@ -55,6 +55,10 @@ const StudyAssistant = () => {
     }
   };
 
+  const handleExternalAIAssistant = () => {
+    window.open("https://partyrock.aws/u/AMARNATH269/T1dMkUA1k/WISE-UP", "_blank");
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <Card className="border-blue-200 shadow-md">
@@ -65,6 +69,14 @@ const StudyAssistant = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 p-6 bg-white">
+          <Button 
+            onClick={handleExternalAIAssistant}
+            className="w-full bg-amber-500 hover:bg-amber-600 mb-4 flex items-center justify-center"
+          >
+            <ExternalLink className="mr-2 h-4 w-4" />
+            Access AWS WISE-UP AI Assistant
+          </Button>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <Textarea
               placeholder="Ask about any Computer Science topic (DSA, OS, Software Engineering, Databases, etc)..."
