@@ -15,24 +15,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Database } from "@/integrations/supabase/types";
 
-type Club = {
-  id: string;
-  name: string;
-  category: string;
-  description: string | null;
-  logo_url: string | null;
-};
-
-type Event = {
-  id: string;
-  title: string;
-  club_id: string;
-  date: string;
-  time: string;
-  venue: string;
-  description: string | null;
-  available: boolean;
+type Club = Database['public']['Tables']['clubs']['Row'];
+type Event = Database['public']['Tables']['events']['Row'] & {
   club_name?: string;
 };
 
@@ -55,10 +41,10 @@ const ClubEvents = () => {
 
       if (clubsError) throw clubsError;
       
-      // Fetch events
+      // Fetch events with club names
       const { data: eventsData, error: eventsError } = await supabase
         .from("events")
-        .select("*, clubs:club_id(name)")
+        .select("*, clubs(name)")
         .order("date");
 
       if (eventsError) throw eventsError;
