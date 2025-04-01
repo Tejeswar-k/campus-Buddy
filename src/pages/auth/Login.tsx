@@ -27,16 +27,6 @@ const Login = () => {
         <Card className="w-full max-w-md border-blue-300 shadow-xl">
           <div className="h-2 bg-gradient-to-r from-blue-600 via-blue-500 to-amber-300 rounded-t-lg"></div>
           <CardHeader className="space-y-1">
-            <div className="flex justify-center mb-2">
-              <img 
-                src="https://upload.wikimedia.org/wikipedia/en/e/e1/SRM_University_Logo.png" 
-                alt="SRM University" 
-                className="h-16"
-                onError={(e) => {
-                  e.currentTarget.src = "https://via.placeholder.com/150x60?text=SRM+University";
-                }}
-              />
-            </div>
             <CardTitle className="text-2xl text-center text-blue-900">Welcome to Campus Buddy</CardTitle>
           </CardHeader>
           <CardContent>
