@@ -88,61 +88,17 @@ const ClubEvents = () => {
           <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
         </div>
       ) : (
-        <Tabs defaultValue="events">
+        <Tabs defaultValue="clubs">
           <TabsList className="mb-4">
-            <TabsTrigger value="events" className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              Events
-            </TabsTrigger>
             <TabsTrigger value="clubs" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               Clubs
             </TabsTrigger>
+            <TabsTrigger value="events" className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              Events
+            </TabsTrigger>
           </TabsList>
-          
-          <TabsContent value="events" className="space-y-6">
-            <h3 className="text-xl font-semibold text-blue-800">Upcoming Events</h3>
-            <div className="grid gap-6">
-              {events.length === 0 ? (
-                <p className="text-gray-500">No upcoming events found</p>
-              ) : (
-                events.map((event) => (
-                  <Card key={event.id}>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <CardTitle>{event.title}</CardTitle>
-                          <p className="text-sm text-gray-600">by {event.club_name}</p>
-                        </div>
-                        <Badge variant={event.available ? "secondary" : "outline"}>
-                          {event.available ? "Available" : "Full"}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex justify-between items-center">
-                        <div className="space-y-1">
-                          <p className="text-sm">
-                            <span className="font-medium">Date:</span> {new Date(event.date).toLocaleDateString()}
-                          </p>
-                          <p className="text-sm">
-                            <span className="font-medium">Time:</span> {event.time}
-                          </p>
-                          <p className="text-sm">
-                            <span className="font-medium">Venue:</span> {event.venue}
-                          </p>
-                          {event.description && (
-                            <p className="text-sm mt-2">{event.description}</p>
-                          )}
-                        </div>
-                        <Button variant="outline">RSVP</Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          </TabsContent>
           
           <TabsContent value="clubs" className="space-y-6">
             <div className="flex items-center justify-between">
@@ -192,6 +148,50 @@ const ClubEvents = () => {
                 ))}
               </TableBody>
             </Table>
+          </TabsContent>
+          
+          <TabsContent value="events" className="space-y-6">
+            <h3 className="text-xl font-semibold text-blue-800">Upcoming Events</h3>
+            <div className="grid gap-6">
+              {events.length === 0 ? (
+                <p className="text-gray-500">No upcoming events found</p>
+              ) : (
+                events.map((event) => (
+                  <Card key={event.id}>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle>{event.title}</CardTitle>
+                          <p className="text-sm text-gray-600">by {event.club_name}</p>
+                        </div>
+                        <Badge variant={event.available ? "secondary" : "outline"}>
+                          {event.available ? "Available" : "Full"}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex justify-between items-center">
+                        <div className="space-y-1">
+                          <p className="text-sm">
+                            <span className="font-medium">Date:</span> {new Date(event.date).toLocaleDateString()}
+                          </p>
+                          <p className="text-sm">
+                            <span className="font-medium">Time:</span> {event.time}
+                          </p>
+                          <p className="text-sm">
+                            <span className="font-medium">Venue:</span> {event.venue}
+                          </p>
+                          {event.description && (
+                            <p className="text-sm mt-2">{event.description}</p>
+                          )}
+                        </div>
+                        <Button variant="outline">RSVP</Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
           </TabsContent>
         </Tabs>
       )}
