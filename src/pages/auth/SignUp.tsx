@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -14,11 +16,58 @@ const SignUp = () => {
     password: "",
     registerNumber: "",
   });
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual signup logic
-    navigate("/dashboard");
+    setLoading(true);
+    
+    try {
+      // Validate email domain
+      if (!formData.email.endsWith('@srmist.edu.in')) {
+        toast({
+          title: "Invalid email",
+          description: "Please use your SRM University email (@srmist.edu.in)",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+      
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.name,
+            register_number: formData.registerNumber,
+          },
+        },
+      });
+      
+      if (error) {
+        toast({
+          title: "Sign up failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Sign up successful",
+          description: "Welcome to Campus Buddy! Please verify your email before logging in.",
+        });
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Error during sign up:", error);
+      toast({
+        title: "Sign up failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,24 +84,26 @@ const SignUp = () => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md border-blue-300 shadow-xl">
+          <div className="h-2 bg-gradient-to-r from-blue-600 via-blue-500 to-amber-300 rounded-t-lg"></div>
           <CardHeader>
-            <CardTitle className="text-2xl text-center">Create your account</CardTitle>
+            <CardTitle className="text-2xl text-center text-blue-900">Create your account</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Full Name</label>
+                <label className="text-sm font-medium text-blue-800">Full Name</label>
                 <Input
                   name="name"
                   placeholder="John Doe"
                   value={formData.name}
                   onChange={handleChange}
                   required
+                  className="border-blue-200 focus-visible:ring-blue-500"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Email</label>
+                <label className="text-sm font-medium text-blue-800">Email</label>
                 <Input
                   name="email"
                   type="email"
@@ -60,20 +111,23 @@ const SignUp = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  className="border-blue-200 focus-visible:ring-blue-500"
                 />
+                <p className="text-xs text-blue-600">Please use your SRM University email (@srmist.edu.in)</p>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Register Number</label>
+                <label className="text-sm font-medium text-blue-800">Register Number</label>
                 <Input
                   name="registerNumber"
                   placeholder="RA2211003010XXX"
                   value={formData.registerNumber}
                   onChange={handleChange}
                   required
+                  className="border-blue-200 focus-visible:ring-blue-500"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Password</label>
+                <label className="text-sm font-medium text-blue-800">Password</label>
                 <Input
                   name="password"
                   type="password"
@@ -81,16 +135,23 @@ const SignUp = () => {
                   value={formData.password}
                   onChange={handleChange}
                   required
+                  minLength={6}
+                  className="border-blue-200 focus-visible:ring-blue-500"
                 />
+                <p className="text-xs text-blue-600">Password must be at least 6 characters long</p>
               </div>
-              <Button type="submit" className="w-full">
-                Sign Up
+              <Button 
+                type="submit" 
+                className="w-full bg-blue-600 hover:bg-blue-700"
+                disabled={loading}
+              >
+                {loading ? "Creating Account..." : "Sign Up"}
               </Button>
-              <p className="text-center text-sm text-gray-600">
+              <p className="text-center text-sm text-blue-700">
                 Already have an account?{" "}
                 <button
                   onClick={() => navigate("/login")}
-                  className="text-blue-600 hover:underline"
+                  className="text-amber-600 hover:text-amber-700 hover:underline font-medium"
                   type="button"
                 >
                   Login

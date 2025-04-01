@@ -13,29 +13,37 @@ import StudyAssistant from "./pages/dashboard/StudyAssistant";
 import ClubEvents from "./pages/dashboard/ClubEvents";
 import CampusNavigate from "./pages/dashboard/CampusNavigate";
 import NotFound from "./pages/NotFound";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/dashboard" element={<Dashboard />}>
-            <Route index element={<Home />} />
-            <Route path="study" element={<StudyAssistant />} />
-            <Route path="events" element={<ClubEvents />} />
-            <Route path="navigate" element={<CampusNavigate />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }>
+              <Route index element={<Home />} />
+              <Route path="study" element={<StudyAssistant />} />
+              <Route path="events" element={<ClubEvents />} />
+              <Route path="navigate" element={<CampusNavigate />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
