@@ -42,6 +42,7 @@ const SignUp = () => {
             full_name: formData.name,
             register_number: formData.registerNumber,
           },
+          emailRedirectTo: window.location.origin + '/dashboard',
         },
       });
       

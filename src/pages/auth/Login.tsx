@@ -25,9 +25,17 @@ const Login = () => {
       });
       
       if (error) {
+        console.error("Login error:", error);
+        let errorMessage = error.message;
+        
+        // Customize error message for unconfirmed email
+        if (error.message.includes("Email not confirmed")) {
+          errorMessage = "Please check your email and confirm your account before logging in.";
+        }
+        
         toast({
           title: "Login failed",
-          description: error.message,
+          description: errorMessage,
           variant: "destructive",
         });
       } else {
