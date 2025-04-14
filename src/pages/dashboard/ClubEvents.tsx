@@ -181,7 +181,7 @@ const ClubEvents = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <CardTitle className="text-xl text-blue-900">{event.title}</CardTitle>
-                          <p className="text-sm text-gray-600 mt-1">Organized by {event.club_name?.name}</p>
+                          <p className="text-sm text-gray-600 mt-1">Organized by {event.clubs?.name}</p>
                         </div>
                         <Badge variant={event.available ? "secondary" : "outline"} className="ml-2">
                           {event.available ? "Registration Open" : "Registration Closed"}
