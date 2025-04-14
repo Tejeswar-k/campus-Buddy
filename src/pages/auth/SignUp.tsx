@@ -52,11 +52,26 @@ const SignUp = () => {
           variant: "destructive",
         });
       } else {
-        toast({
-          title: "Sign up successful",
-          description: "Welcome to Campus Buddy! Please verify your email before logging in.",
+        // After successful signup, automatically log in the user
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
         });
-        navigate("/login");
+
+        if (signInError) {
+          toast({
+            title: "Auto login failed",
+            description: "Account created successfully! Please login with your credentials.",
+            variant: "default",
+          });
+          navigate("/login");
+        } else {
+          toast({
+            title: "Sign up successful",
+            description: "Welcome to Campus Buddy!",
+          });
+          navigate("/dashboard");
+        }
       }
     } catch (error) {
       console.error("Error during sign up:", error);
