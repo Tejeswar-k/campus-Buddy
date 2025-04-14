@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,16 +25,12 @@ const Login = () => {
       
       if (error) {
         console.error("Login error:", error);
-        let errorMessage = error.message;
         
-        // Customize error message for unconfirmed email
-        if (error.message.includes("Email not confirmed")) {
-          errorMessage = "Please check your email and confirm your account before logging in.";
-        }
-        
+        // Instead of showing specific message about email confirmation,
+        // just show a generic error message
         toast({
           title: "Login failed",
-          description: errorMessage,
+          description: "Invalid email or password. Please try again.",
           variant: "destructive",
         });
       } else {

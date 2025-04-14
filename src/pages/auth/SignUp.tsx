@@ -34,6 +34,7 @@ const SignUp = () => {
         return;
       }
       
+      // First create the user account
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -42,7 +43,7 @@ const SignUp = () => {
             full_name: formData.name,
             register_number: formData.registerNumber,
           },
-          emailRedirectTo: window.location.origin + '/dashboard',
+          // Remove email redirect, we don't want to wait for confirmation
         },
       });
       

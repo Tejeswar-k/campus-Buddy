@@ -16,7 +16,8 @@ export const supabase = createClient<Database>(
     auth: {
       autoRefreshToken: true,
       persistSession: true,
-      storage: localStorage
+      storage: localStorage,
+      detectSessionInUrl: false, // We don't want to detect session from URL since we're not using email confirmation
     }
   }
 );
