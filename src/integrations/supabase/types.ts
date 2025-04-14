@@ -9,7 +9,74 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      clubs: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          available: boolean | null
+          club_id: string | null
+          created_at: string | null
+          date: string
+          description: string | null
+          id: string
+          time: string
+          title: string
+          venue: string
+        }
+        Insert: {
+          available?: boolean | null
+          club_id?: string | null
+          created_at?: string | null
+          date: string
+          description?: string | null
+          id?: string
+          time: string
+          title: string
+          venue: string
+        }
+        Update: {
+          available?: boolean | null
+          club_id?: string | null
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          id?: string
+          time?: string
+          title?: string
+          venue?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

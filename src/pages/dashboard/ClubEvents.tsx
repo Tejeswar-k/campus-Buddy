@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,11 +14,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Database } from "@/integrations/supabase/types";
+import type { Database } from "@/integrations/supabase/types";
 
-type Club = Database['public']['Tables']['clubs']['Row'];
-type Event = Database['public']['Tables']['events']['Row'] & {
-  club_name?: string;
+type Club = Database["public"]["Tables"]["clubs"]["Row"];
+type Event = Database["public"]["Tables"]["events"]["Row"] & {
+  clubs: Pick<Club, "name"> | null;
 };
 
 const ClubEvents = () => {
@@ -49,14 +48,8 @@ const ClubEvents = () => {
 
       if (eventsError) throw eventsError;
       
-      // Map events with club names
-      const eventsWithClubNames = eventsData.map((event) => ({
-        ...event,
-        club_name: event.clubs?.name,
-      }));
-      
-      setClubs(clubsData);
-      setEvents(eventsWithClubNames);
+      setClubs(clubsData || []);
+      setEvents(eventsData || []);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast({
@@ -188,7 +181,7 @@ const ClubEvents = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <CardTitle className="text-xl text-blue-900">{event.title}</CardTitle>
-                          <p className="text-sm text-gray-600 mt-1">Organized by {event.club_name}</p>
+                          <p className="text-sm text-gray-600 mt-1">Organized by {event.club_name?.name}</p>
                         </div>
                         <Badge variant={event.available ? "secondary" : "outline"} className="ml-2">
                           {event.available ? "Registration Open" : "Registration Closed"}
