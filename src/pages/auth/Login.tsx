@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,7 +25,6 @@ const Login = () => {
       
       if (error) {
         console.error("Login error:", error);
-        
         toast({
           title: "Login failed",
           description: "Invalid email or password. Please try again.",

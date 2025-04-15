@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,8 +33,8 @@ const SignUp = () => {
         return;
       }
       
-      // Create the user account with auto-confirmation
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      // Sign up without email confirmation
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -43,7 +42,6 @@ const SignUp = () => {
             full_name: formData.name,
             register_number: formData.registerNumber,
           },
-          emailRedirectTo: window.location.origin + "/dashboard",
         },
       });
       
@@ -57,24 +55,8 @@ const SignUp = () => {
         return;
       }
 
-      console.log("Sign up successful, now signing in directly");
-      
-      // Directly sign in after successful signup
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password,
-      });
-
-      if (signInError) {
-        console.error("Auto login error:", signInError);
-        toast({
-          title: "Auto login failed",
-          description: "Account created successfully! Please login with your credentials.",
-          variant: "default",
-        });
-        navigate("/login");
-      } else {
-        console.log("Login successful, user:", signInData?.user);
+      if (data?.user) {
+        console.log("Sign up successful, logging in user");
         toast({
           title: "Sign up successful",
           description: "Welcome to Campus Buddy!",
