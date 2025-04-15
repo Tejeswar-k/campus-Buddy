@@ -19,7 +19,7 @@ const Login = () => {
     setLoading(true);
     
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -32,7 +32,9 @@ const Login = () => {
           description: "Invalid email or password. Please try again.",
           variant: "destructive",
         });
-      } else {
+      } else if (data && data.user) {
+        console.log("Login successful, user:", data.user);
+        
         toast({
           title: "Login successful",
           description: "Welcome back!",

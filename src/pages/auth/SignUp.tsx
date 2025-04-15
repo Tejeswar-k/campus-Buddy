@@ -34,8 +34,8 @@ const SignUp = () => {
         return;
       }
       
-      // First create the user account
-      const { data, error } = await supabase.auth.signUp({
+      // Create the user account with auto-confirmation
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -43,37 +43,43 @@ const SignUp = () => {
             full_name: formData.name,
             register_number: formData.registerNumber,
           },
-          // Remove email redirect, we don't want to wait for confirmation
+          emailRedirectTo: window.location.origin + "/dashboard",
         },
       });
       
-      if (error) {
+      if (signUpError) {
+        console.error("Sign up error:", signUpError);
         toast({
           title: "Sign up failed",
-          description: error.message,
+          description: signUpError.message,
           variant: "destructive",
         });
-      } else {
-        // After successful signup, automatically log in the user
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: formData.email,
-          password: formData.password,
-        });
+        return;
+      }
 
-        if (signInError) {
-          toast({
-            title: "Auto login failed",
-            description: "Account created successfully! Please login with your credentials.",
-            variant: "default",
-          });
-          navigate("/login");
-        } else {
-          toast({
-            title: "Sign up successful",
-            description: "Welcome to Campus Buddy!",
-          });
-          navigate("/dashboard");
-        }
+      console.log("Sign up successful, now signing in directly");
+      
+      // Directly sign in after successful signup
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (signInError) {
+        console.error("Auto login error:", signInError);
+        toast({
+          title: "Auto login failed",
+          description: "Account created successfully! Please login with your credentials.",
+          variant: "default",
+        });
+        navigate("/login");
+      } else {
+        console.log("Login successful, user:", signInData?.user);
+        toast({
+          title: "Sign up successful",
+          description: "Welcome to Campus Buddy!",
+        });
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error("Error during sign up:", error);
