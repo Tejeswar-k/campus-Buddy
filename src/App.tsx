@@ -9,6 +9,7 @@ import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Home from "./pages/dashboard/Home";
+import Tasks from "./pages/dashboard/Tasks";
 import StudyAssistant from "./pages/dashboard/StudyAssistant";
 import ClubEvents from "./pages/dashboard/ClubEvents";
 import CampusNavigate from "./pages/dashboard/CampusNavigate";
@@ -35,6 +36,7 @@ const App = () => (
               </ProtectedRoute>
             }>
               <Route index element={<Home />} />
+              <Route path="tasks" element={<Tasks />} />
               <Route path="study" element={<StudyAssistant />} />
               <Route path="events" element={<ClubEvents />} />
               <Route path="navigate" element={<CampusNavigate />} />

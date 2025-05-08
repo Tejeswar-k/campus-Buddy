@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Home, Brain, Calendar, Map, LogOut, User } from "lucide-react";
+import { Home, Brain, Calendar, Map, LogOut, User, ListTodo } from "lucide-react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,11 @@ const Dashboard = () => {
       path: "/dashboard",
       icon: Home,
       exact: true
+    },
+    {
+      title: "Tasks",
+      path: "/dashboard/tasks",
+      icon: ListTodo,
     },
     {
       title: "AI Study Assistant",
